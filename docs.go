@@ -19,10 +19,10 @@ var swaggerDevRoot embed.FS
 // SwaggerAPI serves swaggerapi
 func SwaggerAPI() http.Handler {
 	var ffs = make(flattenedFS, 0)
-	_ = ffs.FlattenEmbeddedFS(swaggerRoot, ".")
+	ffs.FlattenEmbeddedFS(swaggerRoot, ".")
 
 	if Development() {
-		_ = ffs.FlattenEmbeddedFS(swaggerDevRoot, ".")
+		ffs.FlattenEmbeddedFS(swaggerDevRoot, ".")
 	}
 
 	return http.FileServer(http.FS(ffs))
@@ -30,7 +30,7 @@ func SwaggerAPI() http.Handler {
 
 type flattenedFS map[string]fs.File
 
-func (f flattenedFS) FlattenEmbeddedFS(efs embed.FS, dir string) error {
+func (f flattenedFS) FlattenEmbeddedFS(efs embed.FS, dir string) {
 	del, e := efs.ReadDir(dir)
 	if e != nil {
 		log.Fatalf("failed to ReadDir: %v", e)
@@ -53,7 +53,6 @@ func (f flattenedFS) FlattenEmbeddedFS(efs embed.FS, dir string) error {
 		}
 		f[v.Name()] = file
 	}
-	return nil
 }
 
 func (f flattenedFS) Open(name string) (fs.File, error) {
